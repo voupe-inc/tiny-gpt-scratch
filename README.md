@@ -49,12 +49,42 @@ size, embedding dim, heads, layers, learning rate, etc.) — nothing is
 hardcoded. `sample.py` only loads a checkpoint and generates; it never
 retrains.
 
+## Evaluation
+
+`train.py` logs train/val loss on every eval step to `checkpoints/history.json`.
+`eval.py` turns that into a plot and prints a few sample generations from the
+checkpoint:
+
+```bash
+python -m torch_gpt.eval --checkpoint checkpoints/torch_gpt.pt
+```
+
+The plot below is from the default config (6 layers, 256-dim, 6000 steps,
+4.8M parameters) trained on the TinyStories validation split — train/val
+loss tracking together with no overfitting, down to a val loss of 0.97:
+
+![Training loss curve](assets/loss_curve.png)
+
+```
+--- Prompt: 'Once upon a time' ---
+Once upon a time, there was a little girl named Lily. She wants to play in
+the strong ship. She had so much fun. She looked at the bird and not be
+scarefus. She saw a girl named Lily. Max was so happy and had a very
+
+--- Prompt: 'The little robot' ---
+The little robot went with the fish.
+The ball was sad. The little girl was very happy and the park. The hug and
+the boy were scared. They had a big, fun day and his breather. It climbed
+up and played in the sky and w
+```
+
 ## Project layout
 
 ```
 common/       shared character tokenizer + train/val data loading
-torch_gpt/    model.py (nn.Module), train.py, sample.py
-tests/        shape and tiny-batch-overfit tests
+torch_gpt/    model.py (nn.Module), train.py, sample.py, eval.py
+tests/        shape, tiny-batch-overfit, and eval-plotting tests
+assets/       loss_curve.png used in this README
 checkpoints/  trained models land here (gitignored — regenerate by training)
 ```
 

@@ -1,6 +1,7 @@
 """Train the torch TinyGPT. Usage: python -m torch_gpt.train [options]"""
 
 import argparse
+import json
 from pathlib import Path
 
 import torch
@@ -13,6 +14,8 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--data", default="data/train.txt", help="Path to a plain-text training corpus")
     p.add_argument("--checkpoint", default="checkpoints/torch_gpt.pt")
+    p.add_argument("--history", default="checkpoints/history.json",
+                   help="Where to log per-eval train/val loss, for eval.py to plot")
     p.add_argument("--block-size", type=int, default=128)
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--n-embd", type=int, default=256)
@@ -78,6 +81,9 @@ def main():
 
     ckpt_path = Path(args.checkpoint)
     ckpt_path.parent.mkdir(parents=True, exist_ok=True)
+    history_path = Path(args.history)
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    history = []
 
     print("\nTraining...\n")
     model.train()
@@ -98,6 +104,9 @@ def main():
         if step % args.eval_every == 0 or step == 1:
             losses = estimate_loss()
             print(f"          eval | train {losses['train']:.4f} | val {losses['val']:.4f}")
+
+            history.append({"step": step, "train_loss": losses["train"], "val_loss": losses["val"]})
+            history_path.write_text(json.dumps(history, indent=2))
 
             if losses["val"] < best_val:
                 best_val = losses["val"]
