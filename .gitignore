@@ -1,0 +1,24 @@
+# Virtual environments
+scratch_env/
+.venv/
+venv/
+
+# Training data and media (kept local-only — see README)
+data/
+audio/
+transcripts/
+
+# Checkpoints (regenerate by running the train scripts; too large/binary for git history)
+checkpoints/
+*.pt
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+.idea/
